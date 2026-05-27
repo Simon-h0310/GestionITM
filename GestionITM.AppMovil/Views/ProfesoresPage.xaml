@@ -1,45 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:GestionITM.AppMovil.ViewModels"
-             xmlns:models="clr-namespace:GestionITM.AppMovil.Models"
              x:Class="GestionITM.AppMovil.Views.ProfesoresPage"
-             x:DataType="viewmodels:ProfesoresViewModel"
-             Title="{Binding TituloPantalla}">
+             BackgroundColor="#0B1220">
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
-        
-<ActivityIndicator Grid.Row="0" 
-    IsRunning="{Binding EstaCargando}"
-    IsVisible="{Binding EstaCargando}"
-    Color="Blue" />
-    
-    <CollectionView Grid.Row="1" ItemsSource="{Binding ListaProfesores}">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="14">
+            <Label Text="Profesores" FontSize="28" FontAttributes="Bold" TextColor="#E6F0FF" HorizontalOptions="Center" />
+            <Label Text="Equipo docente" FontSize="14" TextColor="#94A3B8" HorizontalOptions="Center" />
 
-        <CollectionView.EmptyView>
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10" Padding="20">
-                <Label Text="👨‍🏫" FontSize="50" HorizontalOptions="Center" />
-                <Label Text="Aún no hay profesores registrados." TextColor="Gray" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                <Label Text="Toca el botón inferior para buscar en el servidor." TextColor="LightGray" FontSize="14" HorizontalTextAlignment="Center" />
-            </VerticalStackLayout>
-        </CollectionView.EmptyView>
-
-        <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="models:ProfesorModel">
-                        <Frame Margin="0,5" Padding="10" BorderColor="LightGray">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Nombre}" FontSize="18" FontAttributes="Bold" />
-                                <Label Text="{Binding Especialidad}" FontSize="14" TextColor="Gray" />
-                            </VerticalStackLayout>
-                            </Frame>
-                            </DataTemplate>
+            <CollectionView ItemsSource="{Binding Profesores}" SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame CornerRadius="12" HasShadow="True" Padding="12" BackgroundColor="#071427" Margin="6">
+                            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                                <Frame WidthRequest="56" HeightRequest="56" CornerRadius="28" BackgroundColor="#072033" HasShadow="False">
+                                    <Label Text="{Binding Iniciales}" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#E6F0FF" />
+                                </Frame>
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="#E6F0FF" FontSize="16" />
+                                    <Label Text="{Binding Departamento}" FontSize="13" TextColor="#94A3B8" />
+                                </VerticalStackLayout>
+                                <Button Text="Ver" HorizontalOptions="EndAndExpand" BackgroundColor="#2563EB" TextColor="White" CornerRadius="8" />
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
                 </CollectionView.ItemTemplate>
-                </CollectionView>
-                
-                <Button Grid.Row="2"
-                                    Text="Descargar Profesores"
-                                    Command="{Binding CargarProfesoresCommand}"
-                                    Margin="0,20,0,0" />
-    </Grid>
-                </ContentPage>
-                        
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="30">
+                        <Label Text="No hay profesores" TextColor="#94A3B8" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -6,14 +6,10 @@ namespace GestionITM.AppMovil.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        
-        // Android Emulator usa 10.0.2.2 usualmente
-        private const string BaseUrl = "http://10.0.2.2:5000/api/";
 
         public ApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(BaseUrl);
         }
 
         public async Task<string?> LoginAsync(string email, string password)

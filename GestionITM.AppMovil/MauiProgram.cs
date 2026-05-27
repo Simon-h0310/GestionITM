@@ -1,6 +1,7 @@
 ﻿using GestionITM.AppMovil.Views;
 using GestionITM.AppMovil.ViewModels;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Devices;
 
 namespace GestionITM.AppMovil
 {
@@ -31,7 +32,13 @@ namespace GestionITM.AppMovil
 
             builder.Services.AddTransient<Services.AuthenticationHandler>();
 
-            builder.Services.AddHttpClient<Services.ApiService>();
+            builder.Services.AddHttpClient<Services.ApiService>(client =>
+            {
+                var baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                    ? "http://10.0.2.2:5016/api/"
+                    : "http://localhost:5016/api/";
+                client.BaseAddress = new Uri(baseUrl);
+            });
 
             builder.Services.AddHttpClient<Services.CursoService>(client => 
             {

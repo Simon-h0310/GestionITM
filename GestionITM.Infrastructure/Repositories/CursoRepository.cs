@@ -29,5 +29,9 @@ namespace GestionITM.Infrastructure.Repositories
             await _context.Cursos.AddAsync(curso);
             await _context.SaveChangesAsync();
         }
+        public IQueryable<Curso> QueryAll()
+        {
+            return _context.Cursos.AsQueryable();
+        }
     }
 }

@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:GestionITM.AppMovil.ViewModels"
              x:Class="GestionITM.AppMovil.Views.LoginPage"
-             Title="Login">
+             BackgroundColor="#0B1220">
 
-    <VerticalStackLayout Padding="20" Spacing="15" VerticalOptions="Center">
-        <Label Text="ITM Matrículas" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
-        
-        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
-        <Entry Placeholder="Contraseña" Text="{Binding Password}" IsPassword="True" />
-        
-        <Button Text="Iniciar Sesión" Command="{Binding LoginCommand}" />
-        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-    </VerticalStackLayout>
+    <ContentPage.Content>
+        <Grid Padding="24" RowDefinitions="Auto,*,Auto">
+            <VerticalStackLayout Grid.Row="0" Spacing="6" HorizontalOptions="Center">
+                <Label Text="ITM Matrículas" FontSize="30" FontAttributes="Bold" TextColor="#E6F0FF" />
+                <Label Text="Accede a tu cuenta" FontSize="12" TextColor="#94A3B8" />
+            </VerticalStackLayout>
+
+            <Frame Grid.Row="1" CornerRadius="16" Padding="20" BackgroundColor="#072033" HasShadow="True" HorizontalOptions="Fill" VerticalOptions="Center">
+                <VerticalStackLayout Spacing="14">
+                    <Entry Placeholder="Correo electrónico" Text="{Binding Email}" Keyboard="Email" BackgroundColor="#02111A" TextColor="#E6F0FF" PlaceholderColor="#475569" HeightRequest="48" />
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Entry Grid.Column="0" Placeholder="Contraseña" IsPassword="{Binding IsPassword}" Text="{Binding Password}" BackgroundColor="#02111A" TextColor="#E6F0FF" PlaceholderColor="#475569" HeightRequest="48" />
+                        <Button Grid.Column="1" Text="{Binding TogglePasswordText}" Command="{Binding TogglePasswordCommand}" BackgroundColor="#0B1220" TextColor="#93C5FD" CornerRadius="8" HeightRequest="48" />
+                    </Grid>
+
+                    <Label Text="{Binding ErrorMessage}" TextColor="#FB7185" IsVisible="{Binding HasError}" FontAttributes="Bold" />
+
+                    <Button Text="Iniciar sesión" Command="{Binding LoginCommand}" BackgroundColor="#2563EB" TextColor="White" CornerRadius="12" HeightRequest="50" />
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#60A5FA" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Spacing="8">
+                <Label Text="¿Olvidaste la contraseña?" TextColor="#94A3B8" />
+                <Label Text="Recuperar" TextColor="#60A5FA" FontAttributes="Bold" />
+            </HorizontalStackLayout>
+        </Grid>
+    </ContentPage.Content>
 </ContentPage>
