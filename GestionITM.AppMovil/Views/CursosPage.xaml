@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:GestionITM.AppMovil.ViewModels"
+             xmlns:models="clr-namespace:GestionITM.AppMovil.Services"
+             x:Class="GestionITM.AppMovil.Views.CursosPage"
+             Title="Catálogo de Cursos">
+
+    <Grid>
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefrescarCursosCommand}">
+            <CollectionView ItemsSource="{Binding Cursos}" 
+                            RemainingItemsThreshold="2"
+                            RemainingItemsThresholdReachedCommand="{Binding CargarCursosCommand}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10" Padding="20">
+                        <Label Text="📚" FontSize="50" HorizontalOptions="Center" />
+                        <Label Text="Aún no hay cursos disponibles." TextColor="Gray" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                        <Label Text="¡Desliza hacia abajo para validar de nuevo!" TextColor="LightGray" FontSize="14" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CursoDto">
+                    <Frame Margin="10" Padding="10" BorderColor="Gray" CornerRadius="8">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Nombre}" FontAttributes="Bold" FontSize="18" />
+                            <Label Text="{Binding Codigo, StringFormat='Código: {0}'}" />
+                            <Label Text="{Binding Creditos, StringFormat='Créditos: {0}'}" />
+                            <Label Text="{Binding CuposDisponibles, StringFormat='Cupos: {0}'}" TextColor="Blue" />
+                            <Button Text="Matricular" 
+                                    Margin="0,10,0,0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CursosViewModel}}, Path=MatricularCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        </RefreshView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>
