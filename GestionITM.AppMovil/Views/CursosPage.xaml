@@ -4,7 +4,11 @@
              xmlns:viewmodels="clr-namespace:GestionITM.AppMovil.ViewModels"
              xmlns:models="clr-namespace:GestionITM.AppMovil.Services"
              x:Class="GestionITM.AppMovil.Views.CursosPage"
-             Title="Catálogo de Cursos">
+             Title="Catalogo de Cursos">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Salir" Command="{Binding CerrarSesionCommand}" />
+    </ContentPage.ToolbarItems>
 
     <Grid>
         <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefrescarCursosCommand}">
@@ -14,20 +18,32 @@
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10" Padding="20">
-                        <Label Text="📚" FontSize="50" HorizontalOptions="Center" />
-                        <Label Text="Aún no hay cursos disponibles." TextColor="Gray" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                        <Label Text="¡Desliza hacia abajo para validar de nuevo!" TextColor="LightGray" FontSize="14" HorizontalTextAlignment="Center" />
+                        <Label Text="Sin Cursos" FontSize="50" HorizontalOptions="Center" />
+                        <Label Text="Aun no hay cursos disponibles." TextColor="Gray" FontSize="18" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                        <Label Text="Desliza hacia abajo para recargar." TextColor="LightGray" FontSize="14" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
+
+                <CollectionView.Footer>
+                    <Grid Padding="20">
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                           IsVisible="{Binding IsBusy}" 
+                                           Color="DarkBlue" />
+                        <Label Text="No hay mas cursos disponibles" 
+                               IsVisible="{Binding NoHayMasDatos}" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center" />
+                    </Grid>
+                </CollectionView.Footer>
 
                 <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CursoDto">
                     <Frame Margin="10" Padding="10" BorderColor="Gray" CornerRadius="8">
                         <VerticalStackLayout>
                             <Label Text="{Binding Nombre}" FontAttributes="Bold" FontSize="18" />
-                            <Label Text="{Binding Codigo, StringFormat='Código: {0}'}" />
-                            <Label Text="{Binding Creditos, StringFormat='Créditos: {0}'}" />
-                            <Label Text="{Binding CuposDisponibles, StringFormat='Cupos: {0}'}" TextColor="Blue" />
+                            <Label Text="{Binding Codigo, StringFormat='Codigo: {0}'}" />
+                            <Label Text="{Binding Creditos, StringFormat='Creditos: {0}'}" />
+                            <Label Text="{Binding CuposDisponibles, StringFormat='Cupos disponibles: {0}'}" TextColor="Blue" />
                             <Button Text="Matricular" 
                                     Margin="0,10,0,0"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CursosViewModel}}, Path=MatricularCommand}"

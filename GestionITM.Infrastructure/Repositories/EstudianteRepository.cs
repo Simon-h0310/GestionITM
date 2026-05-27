@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +34,13 @@ namespace GestionITM.Infrastructure.Repositories
             // Agregamos el nuevo estudiante al DbSet y guardamos los cambios en la base de datos
             await _context.Estudiantes.AddAsync(estudiante);
             await _context.SaveChangesAsync(); // Persiste los cambios en SQL
+        }
+
+        // Nivel 5: Buscar estudiante por correo para autenticación JWT
+        public async Task<Estudiante?> ObtenerPorCorreoAsync(string correo)
+        {
+            return await _context.Estudiantes
+                .FirstOrDefaultAsync(e => e.Correo.ToLower() == correo.ToLower());
         }
     }
 }

@@ -96,6 +96,11 @@ builder.Services.AddScoped<ICursoRepository, CursoRepository>();
 builder.Services.AddScoped<IProfesorRepository, ProfesorRepository>();
 builder.Services.AddScoped<IProfesorService, ProfesorService>();
 
+// Nivel 5: Registrar servicios de Matrícula y Curso para el Taller Final
+builder.Services.AddScoped<IMatriculaRepository, MatriculaRepository>();
+builder.Services.AddScoped<IMatriculaService, GestionITM.Domain.Services.MatriculaService>();
+builder.Services.AddScoped<ICursoService, GestionITM.Domain.Services.CursoService>();
+
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

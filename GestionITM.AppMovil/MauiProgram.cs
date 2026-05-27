@@ -1,4 +1,4 @@
-﻿using GestionITM.AppMovil.Views;
+using GestionITM.AppMovil.Views;
 using GestionITM.AppMovil.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -35,13 +35,15 @@ namespace GestionITM.AppMovil
 
             builder.Services.AddHttpClient<Services.CursoService>(client => 
             {
-                client.BaseAddress = new Uri("http://10.0.2.2:5000/api/");
+                client.BaseAddress = new Uri("http://10.0.2.2:8080/api/");
+                client.Timeout = TimeSpan.FromSeconds(30);
             })
             .AddHttpMessageHandler<Services.AuthenticationHandler>();
 
             builder.Services.AddHttpClient<Services.MatriculaService>(client => 
             {
-                client.BaseAddress = new Uri("http://10.0.2.2:5000/api/");
+                client.BaseAddress = new Uri("http://10.0.2.2:8080/api/");
+                client.Timeout = TimeSpan.FromSeconds(30);
             })
             .AddHttpMessageHandler<Services.AuthenticationHandler>();
 

@@ -27,22 +27,44 @@ namespace GestionITM.AppMovil.ViewModels
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
-                await Application.Current!.MainPage!.DisplayAlert("Error", "Campos vacíos", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("Error", "Por favor ingresa tu correo y contrasena.", "OK");
+                return;
+            }
+
+            // Validar formato de email
+            if (!Email.Contains("@") || !Email.Contains("."))
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Error", "Por favor ingresa un correo valido.", "OK");
                 return;
             }
 
             IsBusy = true;
-            var token = await _apiService.LoginAsync(Email, Password);
-            IsBusy = false;
+            
+            try
+            {
+                var token = await _apiService.LoginAsync(Email, Password);
 
-            if (token != null)
-            {
-                await SecureStorage.SetAsync("jwt_token", token);
-                await Shell.Current.GoToAsync("//CursosPage"); // Asumiendo CursosPage como root en appshell
+                if (token != null)
+                {
+                    await SecureStorage.SetAsync("jwt_token", token);
+                    await Shell.Current.GoToAsync("//CursosPage");
+                }
+                else
+                {
+                    await Application.Current!.MainPage!.DisplayAlert("Error", "Credenciales invalidas. Verifica tu correo y contrasena.", "OK");
+                }
             }
-            else
+            catch (HttpRequestException)
             {
-                await Application.Current!.MainPage!.DisplayAlert("Error", "Credenciales inválidas", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("Sin Conexion", "No se pudo conectar al servidor. Verifica tu conexion a internet.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current!.MainPage!.DisplayAlert("Error", $"Ocurrio un error inesperado: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

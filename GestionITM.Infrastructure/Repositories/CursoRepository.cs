@@ -29,5 +29,11 @@ namespace GestionITM.Infrastructure.Repositories
             await _context.Cursos.AddAsync(curso);
             await _context.SaveChangesAsync();
         }
+
+        // Nivel 5: IQueryable para paginación con Skip/Take en SQL Server
+        public IQueryable<Curso> QueryAll()
+        {
+            return _context.Cursos.AsQueryable();
+        }
     }
 }

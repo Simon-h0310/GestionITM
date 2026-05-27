@@ -7,8 +7,9 @@ namespace GestionITM.AppMovil.Services
     {
         private readonly HttpClient _httpClient;
         
-        // Android Emulator usa 10.0.2.2 usualmente
-        private const string BaseUrl = "http://10.0.2.2:5000/api/";
+        // Android Emulator usa 10.0.2.2 para acceder al host local
+        // Puerto 8080 es el expuesto por docker-compose
+        private const string BaseUrl = "http://10.0.2.2:8080/api/";
 
         public ApiService(HttpClient httpClient)
         {
@@ -18,23 +19,39 @@ namespace GestionITM.AppMovil.Services
 
         public async Task<string?> LoginAsync(string email, string password)
         {
-            var loginData = new { correo = email, contraseña = password };
-            var response = await _httpClient.PostAsJsonAsync("auth/login", loginData);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var authResult = JsonSerializer.Deserialize<AuthResponse>(responseContent, options);
-                return authResult?.Token;
-            }
+                var loginData = new { correo = email, contraseña = password };
+                var response = await _httpClient.PostAsJsonAsync("auth/login", loginData);
 
-            return null;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    var authResult = JsonSerializer.Deserialize<AuthResponse>(responseContent, options);
+                    return authResult?.Token;
+                }
+
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                // Sin conexión o servidor caído
+                return null;
+            }
+            catch (Exception)
+            {
+                // Error inesperado
+                return null;
+            }
         }
     }
 
     public class AuthResponse
     {
         public string Token { get; set; } = string.Empty;
+        public string NombreUsuario { get; set; } = string.Empty;
+        public string Rol { get; set; } = string.Empty;
+        public int UserId { get; set; }
     }
 }

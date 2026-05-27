@@ -18,6 +18,9 @@ namespace GestionITM.AppMovil.ViewModels
         [ObservableProperty]
         private bool isRefreshing;
 
+        [ObservableProperty]
+        private bool noHayMasDatos;
+
         private int _currentPage = 1;
         private const int PageSize = 10;
         private bool _hasMoreData = true;
@@ -35,25 +38,46 @@ namespace GestionITM.AppMovil.ViewModels
 
             IsBusy = true;
 
-            var result = await _cursoService.GetCursosPaginadosAsync(_currentPage, PageSize);
-            if (result != null && result.Items.Any())
+            try
             {
-                foreach (var curso in result.Items)
+                var result = await _cursoService.GetCursosPaginadosAsync(_currentPage, PageSize);
+                if (result != null && result.Items.Any())
                 {
-                    Cursos.Add(curso);
+                    foreach (var curso in result.Items)
+                    {
+                        Cursos.Add(curso);
+                    }
+                    _currentPage++;
+                    if (result.Items.Count < PageSize)
+                    {
+                        _hasMoreData = false;
+                        NoHayMasDatos = true;
+                    }
                 }
-                _currentPage++;
-                if (result.Items.Count < PageSize)
+                else
                 {
                     _hasMoreData = false;
+                    NoHayMasDatos = true;
                 }
             }
-            else
+            catch (HttpRequestException)
             {
-                _hasMoreData = false;
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Sin Conexion", 
+                    "No se pudo conectar al servidor. Verifica tu conexion a internet.", 
+                    "OK");
             }
-
-            IsBusy = false;
+            catch (Exception ex)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error", 
+                    $"Ocurrio un error al cargar los cursos: {ex.Message}", 
+                    "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -66,6 +90,7 @@ namespace GestionITM.AppMovil.ViewModels
             // Reiniciar estado
             _currentPage = 1;
             _hasMoreData = true;
+            NoHayMasDatos = false;
             Cursos.Clear();
 
             await CargarCursosAsync();
@@ -78,28 +103,66 @@ namespace GestionITM.AppMovil.ViewModels
         {
             if (curso == null) return;
 
+            if (curso.CuposDisponibles <= 0)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Sin Cupos", 
+                    "Este curso no tiene cupos disponibles.", 
+                    "OK");
+                return;
+            }
+
             bool isConfirmed = await Application.Current!.MainPage!.DisplayAlert(
-                "Confirmar", 
-                $"¿Deseas matricularte en {curso.Nombre}?", 
-                "Sí", "No");
+                "Confirmar Matricula", 
+                $"Deseas matricularte en {curso.Nombre}?", 
+                "Si", "No");
 
             if (!isConfirmed) return;
 
             IsBusy = true;
-            // Periodo harcodeado por ahora
-            var (isSuccess, message) = await _matriculaService.CrearMatriculaAsync(curso.Id, "2026-1");
-            IsBusy = false;
+            
+            try
+            {
+                // Periodo actual hardcodeado para el taller
+                var (isSuccess, message) = await _matriculaService.CrearMatriculaAsync(curso.Id, "2026-1");
 
-            if (isSuccess)
-            {
-                await Application.Current!.MainPage!.DisplayAlert("Éxito", message, "OK");
-                // Podríamos actualizar cupos locales, o recargar
-                curso.CuposDisponibles--;
+                if (isSuccess)
+                {
+                    await Application.Current!.MainPage!.DisplayAlert("Exito", message, "OK");
+                    // Actualizar cupos localmente
+                    curso.CuposDisponibles--;
+                }
+                else
+                {
+                    // Mostrar el mensaje de error del backend (ej: "No hay cupos disponibles")
+                    await Application.Current!.MainPage!.DisplayAlert("Error", message, "OK");
+                }
             }
-            else
+            catch (HttpRequestException)
             {
-                await Application.Current!.MainPage!.DisplayAlert("Error", message, "OK");
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Sin Conexion", 
+                    "No se pudo conectar al servidor. Verifica tu conexion a internet.", 
+                    "OK");
             }
+            catch (Exception ex)
+            {
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error", 
+                    $"Ocurrio un error inesperado: {ex.Message}", 
+                    "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task CerrarSesionAsync()
+        {
+            SecureStorage.Remove("jwt_token");
+            await Shell.Current.GoToAsync("//LoginPage");
         }
     }
 }

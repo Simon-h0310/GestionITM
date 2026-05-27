@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +13,8 @@ namespace GestionITM.Domain.Interfaces
         Task<IEnumerable<Estudiante>> ObtenerTodoAsync(); // Obtener todos los estudiantes
         Task<Estudiante?> ObtenerPorIdAsync(int id); // Obtener un estudiante por su ID
         Task AgregarAsync(Estudiante estudiante); // Agregar un nuevo estudiante
+        
+        // Nivel 5: Buscar estudiante por correo para autenticación
+        Task<Estudiante?> ObtenerPorCorreoAsync(string correo);
     }
 }
